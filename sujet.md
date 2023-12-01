@@ -11,3 +11,21 @@
 5.  Shortly after the appearance of WebAssembly another paper proposed a mechanized specification of the language using Isabelle. The paper can be consulted here: https://www.cl.cam.ac.uk/~caw77/papers/mechanising-and-verifying-the-webassembly-specification.pdf. This mechanized specification complements the first formalization attempt from the paper. According to the author of this second paper, what are the main advantages of the mechanized specification? Did it help improving the original formal specification of the language? What other artifacts were derived from this mechanized specification? How did the author verify the specification? Does this new specification removes the need for testing?
 
 ## Answers
+
+2) 
+- Bug selected: CollectionUtils.removeAll() not throwing proper NullPointerException(NPE) if the first parameter is emptye
+
+- Description: The CollectionUtils.removeAll(Collection<E> collection, Collection<?> remove) does not throw a NullPointerException(NPE) when the “remove” parameters is null, but only if the “collection” parameter is empty.
+In the documentation it is stated that an NPE will be thrown if any of the parameters is null.This behavior is missing in the documentation. While this behavior is somehow correct (removing a null Object from an empty Collection we should obtain an empty Collection) I think throwing an NPE would be more in line with the documentation provided.
+- Bug qualification: loacal bugs due to an omission of some informations in the documentattion
+- soltion found: The solution involves throwing an NPE if the first parameter is empty.
+- The project contributors have added new tests to ensure the detection of the bug if it reoccurs in the future. These tests verify that the removeAll() method throws an NPE if the first parameter is empty
+
+this test code:
+@Test(expected = NullPointerException.class)
+public void testRemoveAllWithEmptyFirstParameter() {
+    Collection<String> collection = new ArrayList<>();
+    Collection<String> elementsToRemove = new ArrayList<>();
+
+    CollectionUtils.removeAll(collection, elementsToRemove);
+}
